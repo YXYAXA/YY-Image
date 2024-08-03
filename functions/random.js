@@ -38,7 +38,7 @@ export async function onRequest(context) {
                 if (port) {
                     randomUrl = protocol + '//' + domain + ':' + port + randomPath;
                 } else {
-                    randomUrl = protocol + '//' + domain + randomPath;
+                    randomUrl = protocol + '//' + domain + ':' + port + randomPath;
                 }
             }
 
