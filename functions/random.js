@@ -33,12 +33,7 @@ export async function onRequest(context) {
         const randomType = requestUrl.searchParams.get('type'); // 获取查询参数 'type'
 
         // 如果 'type' 参数为 'url'，则构建完整的图片 URL
-        if (randomType == 'url') {
-            randomUrl = protocol + '//' + domain + ':' + port + randomPath;
-        }
-        else{
-            randomUrl = protocol + '//' + domain + ':' + port + randomPath;
-        }
+        randomUrl = protocol + '//' + domain + ':' + port + randomPath;
 
         // 直接重定向到图片 URL
         return Response.redirect(randomUrl, 302);
