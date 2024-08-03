@@ -41,6 +41,14 @@ export async function onRequest(context) {
                     randomUrl = protocol + '//' + domain + ':' + port + randomPath;
                 }
             }
+            else{
+                if (port) {
+                    randomUrl = protocol + '//' + domain + ':' + port + randomPath;
+                } else {
+                    randomUrl = protocol + '//' + domain + ':' + port + randomPath;
+                }
+            }
+            }
 
             // 直接重定向到图片 URL
             return Response.redirect(randomUrl, 302);
