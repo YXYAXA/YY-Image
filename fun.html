@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高级物体检测（中文版）</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            max-width: 800px;
+            width: 100%;
+        }
+        h1, h2 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        #video-container {
+            position: relative;
+            margin-top: 20px;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+        #webcam, #uploadedImage {
+            width: 100%;
+            max-width: 640px;
+            height: auto;
+            border-radius: 10px;
+        }
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 10px 0;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        #fileInput {
+            display: none;
+        }
+        .file-label {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #2ecc71;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .file-label:hover {
+            background-color: #27ae60;
+        }
+        #result {
+            margin-top: 20px;
+            white-space: pre-wrap;
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .loading {
+            text-align: center;
+            font-style: italic;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>高级物体检测（中文版）</h1>
+        
+        <h2>实时摄像头检测</h2>
+        <div id="video-container">
+            <video id="webcam" autoplay playsinline></video>
+            <canvas id="canvas"></canvas>
+        </div>
+        <button id="startButton" class="btn" disabled>正在加载模型...</button>
+    </div>
+
+    <div class="container">
+        <h2>图片上传检测</h2>
+        <input type="file" id="fileInput" accept="image/*">
+        <label for="fileInput" class="file-label">选择图片</label>
+        <img id="uploadedImage" style="display: none;">
+        <div id="result"></div>
+    </div>
+
+    <script>
+        let model;
+        const video = document.getElementById('webcam');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const startButton = document.getElementById('startButton');
+        const fileInput = document.getElementById('fileInput');
+        const uploadedImage = document.getElementById('uploadedImage');
+        const resultDiv = document.getElementById('result');
+        let isDetecting = false;
+
+        // 英文到中文的翻译字典
+        const translations = {
+            'person': '人', 'bicycle': '自行车', 'car': '汽车', 'motorcycle': '摩托车',
+            'airplane': '飞机', 'bus': '公共汽车', 'train': '火车', 'truck': '卡车',
+            'boat': '船', 'traffic light': '交通灯', 'fire hydrant': '消防栓',
+            'stop sign': '停止标志', 'parking meter': '停车计时器', 'bench': '长凳',
+            'bird': '鸟', 'cat': '猫', 'dog': '狗', 'horse': '马', 'sheep': '羊',
+            'cow': '牛', 'elephant': '大象', 'bear': '熊', 'zebra': '斑马', 'giraffe': '长颈鹿',
+            'backpack': '背包', 'umbrella': '雨伞', 'handbag': '手提包', 'tie': '领带',
+            'suitcase': '手提箱', 'frisbee': '飞盘', 'skis': '滑雪板', 'snowboard': '滑雪板',
+            'sports ball': '运动球', 'kite': '风筝', 'baseball bat': '棒球棒',
+            'baseball glove': '棒球手套', 'skateboard': '滑板', 'surfboard': '冲浪板',
+            'tennis racket': '网球拍', 'bottle': '瓶子', 'wine glass': '红酒杯',
+            'cup': '杯子', 'fork': '叉子', 'knife': '刀', 'spoon': '勺子', 'bowl': '碗',
+            'banana': '香蕉', 'apple': '苹果', 'sandwich': '三明治', 'orange': '橙子',
+            'broccoli': '西兰花', 'carrot': '胡萝卜', 'hot dog': '热狗', 'pizza': '披萨',
+            'donut': '甜甜圈', 'cake': '蛋糕', 'chair': '椅子', 'couch': '沙发',
+            'potted plant': '盆栽', 'bed': '床', 'dining table': '餐桌', 'toilet': '马桶',
+            'tv': '电视', 'laptop': '笔记本电脑', 'mouse': '鼠标', 'remote': '遥控器',
+            'keyboard': '键盘', 'cell phone': '手机', 'microwave': '微波炉', 'oven': '烤箱',
+            'toaster': '烤面包机', 'sink': '水槽', 'refrigerator': '冰箱', 'book': '书',
+            'clock': '时钟', 'vase': '花瓶', 'scissors': '剪刀', 'teddy bear': '泰迪熊',
+            'hair drier': '吹风机', 'toothbrush': '牙刷'
+        };
+
+        // 加载模型
+        cocoSsd.load().then(loadedModel => {
+            model = loadedModel;
+            startButton.textContent = "开始检测";
+            startButton.disabled = false;
+            console.log("模型加载完成");
+        });
+
+        // 访问摄像头
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                video.srcObject = stream;
+                video.onloadedmetadata = () => {
+                    video.play();
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                };
+            })
+            .catch(err => {
+                console.error("无法访问摄像头: ", err);
+                startButton.textContent = "无法访问摄像头";
+                startButton.disabled = true;
+            });
+
+        // 开始/停止检测按钮
+        startButton.onclick = () => {
+            if (!isDetecting) {
+                isDetecting = true;
+                startButton.textContent = "停止检测";
+                detectObjects();
+            } else {
+                isDetecting = false;
+                startButton.textContent = "开始检测";
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        };
+
+        // 实时物体检测
+        function detectObjects() {
+            if (!isDetecting) return;
+            
+            // 确保画布尺寸与视频尺寸匹配
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            model.detect(video).then(predictions => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                predictions.forEach(prediction => {
+                    const [x, y, width, height] = prediction.bbox;
+                    const label = translations[prediction.class] || prediction.class;
+                    
+                    ctx.strokeStyle = '#00FFFF';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(x, y, width, height);
+                    
+                    ctx.fillStyle = 'rgba(0, 255, 255, 0.5)';
+                    ctx.fillRect(x, y - 25, ctx.measureText(label).width + 10, 25);
+                    
+                    ctx.fillStyle = '#000000';
+                    ctx.font = '16px Arial';
+                    ctx.fillText(label, x + 5, y - 7);
+                });
+
+                requestAnimationFrame(detectObjects);
+            });
+        }
+
+        // 图片上传检测
+        fileInput.onchange = (event) => {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                uploadedImage.src = e.target.result;
+                uploadedImage.style.display = 'block';
+                resultDiv.textContent = "正在检测...";
+                uploadedImage.onload = () => detectObjectsInImage(uploadedImage);
+            };
+
+            reader.readAsDataURL(file);
+        };
+
+        // 检测上传的图片中的物体
+        function detectObjectsInImage(image) {
+            model.detect(image).then(predictions => {
+                let resultText = "检测结果:\n";
+                predictions.forEach(prediction => {
+                    const label = translations[prediction.class] || prediction.class;
+                    resultText += `${label} (置信度: ${(prediction.score * 100).toFixed(2)}%)\n`;
+                });
+                resultDiv.textContent = resultText;
+            });
+        }
+
+        // API接口
+        function detectObjectsAPI(imageData) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => {
+                    model.detect(img).then(predictions => {
+                        const objects = predictions.map(pred => translations[pred.class] || pred.class);
+                        resolve(objects);
+                    }).catch(reject);
+                };
+                img.onerror = reject;
+                img.src = imageData;
+            });
+        }
+
+        // 示例：如何使用API
+        // detectObjectsAPI('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAA...').then(objects => {
+        //     console.log('检测到的物体:', objects);
+        // }).catch(error => {
+        //     console.error('错误:', error);
+        // });
+    </script>
+</body>
+</html>
