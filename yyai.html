@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>羊语AI - 引领智能对话新潮流</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #FF6B6B;
+            --secondary-color: #4ECDC4;
+            --accent-color: #FFD93D;
+            --text-color: #2C3E50;
+            --bg-color: #F7F7F7;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 150px 0;
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-text {
+            flex: 1;
+        }
+        
+        h1 {
+            font-size: 5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: -2px;
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            max-width: 600px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .header-image {
+            flex: 1;
+            text-align: right;
+        }
+        
+        .header-image svg {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .features {
+            padding: 100px 0;
+            background-color: white;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 60px;
+            color: var(--primary-color);
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+        
+        .feature-item {
+            text-align: center;
+            padding: 40px;
+            border-radius: 20px;
+            background-color: var(--bg-color);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-item::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, var(--secondary-color) 0%, transparent 70%);
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+        
+        .feature-item:hover::before {
+            opacity: 0.1;
+            transform: translate(25%, 25%);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .feature-description {
+            position: relative;
+        }
+        
+        footer {
+            background-color: var(--text-color);
+            color: white;
+            text-align: center;
+            padding: 40px 0;
+        }
+        
+        .chat-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .chat-button:hover {
+            transform: scale(1.1) rotate(10deg);
+        }
+        
+        .chat-icon {
+            width: 30px;
+            height: 30px;
+            fill: var(--text-color);
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                padding: 100px 0;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            h1 {
+                font-size: 3rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .header-image {
+                margin-top: 40px;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="header-text">
+                    <h1>羊语AI</h1>
+                    <p class="subtitle">引领智能对话新潮流，打造前所未有的交互体验</p>
+                    <a href="https://www.yuychat.cn" class="cta-button">探索未来</a>
+                </div>
+                <div class="header-image">
+                    <svg width="500" height="400" viewBox="0 0 500 400" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#FF6B6B;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#4ECDC4;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <circle cx="250" cy="200" r="150" fill="url(#grad1)" />
+                        <path d="M250 50 L100 350 L400 350 Z" fill="#FFD93D" opacity="0.7" />
+                        <circle cx="250" cy="200" r="50" fill="#2C3E50" />
+                        <circle cx="230" cy="180" r="10" fill="white" />
+                        <rect x="150" y="300" width="200" height="20" rx="10" fill="#2C3E50" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title">为什么选择羊语AI？</h2>
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">🚀</div>
+                    <h3 class="feature-title">超前体验</h3>
+                    <p class="feature-description">突破性的AI技术，带来前所未有的智能对话体验</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🎨</div>
+                    <h3 class="feature-title">个性定制</h3>
+                    <p class="feature-description">根据你的喜好，打造专属的AI助手</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title">隐私保护</h3>
+                    <p class="feature-description">先进的加密技术，确保你的数据安全无虞</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🌈</div>
+                    <h3 class="feature-title">多场景应用</h3>
+                    <p class="feature-description">工作、学习、娱乐，羊语AI随时待命</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 羊语AI. 引领智能对话新时代。</p>
+        </div>
+    </footer>
+    
+    <div class="chat-button" id="chat-button">
+        <svg class="chat-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+            <path d="M0 0h24v24H0z" fill="none"/>
+        </svg>
+    </div>
+    
+    <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/0.1.0-beta.5/libs/cn/index.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatButton = document.getElementById('chat-button');
+            let chatInitialized = false;
+            
+            chatButton.addEventListener('click', function() {
+                if (!chatInitialized) {
+                    new CozeWebSDK.WebChatClient({
+                        config: {
+                            bot_id: '7404668511764611111',
+                        },
+                        componentProps: {
+                            title: '羊语AI',
+                        },
+                    });
+                    chatInitialized = true;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
